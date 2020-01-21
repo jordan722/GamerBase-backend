@@ -17,7 +17,7 @@ async function getTwitchInfo(req, res, next) {
 			headers: { "Client-ID": TWITCH_API_KEY }
 		});
 		if (response.status === 200) {
-			res.status(200).json(response.data);
+			res.status(200).json(response.data.data[0]);
 		} else {
 			throw "Bad Twitch query.";
 		}

@@ -8,6 +8,7 @@
 	},
 	"dependencies": {
 		"axios": "^0.19.1",
+		"cheerio": "^1.0.0-rc.3",
 		"compression": "^1.7.3",
 		"cookie-parser": "~1.4.3",
 		"debug": "~2.6.9",
@@ -17,6 +18,7 @@
 		"morgan": "~1.9.0",
 		"pg": "^7.17.1",
 		"pgtools": "^0.3.0",
-		"sequelize": "^4.41.0"
+		"sequelize": "^4.41.0",
+		"unminify": "^1.1.0"
 	}
 }

@@ -5,11 +5,13 @@ const router = express.Router();
 const usersRouter = require("./users");
 const twitchRouter = require("./twitch");
 const rawgRouter = require("./rawg");
+const mixerRouter = require("./mixer");
 
 // Mount our subrouters to assemble our apiRouter;
 router.use("/users", usersRouter);
 router.use("/twitch", twitchRouter);
 router.use("/rawg", rawgRouter);
+router.use("/mixer", mixerRouter);
 
 // Error handling middleware;
 router.use((req, res, next) => {
