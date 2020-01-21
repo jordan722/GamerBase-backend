@@ -74,7 +74,8 @@ async function getGameData(req, res, next){
       // get general game data
       const gameData = await axios.get(`https://api.rawg.io/api/games/${req.params.id}`);
       data = gameData.data;
-      keys = ['id', 'name', 'description', 'rating', 'reddit_url', 'released', 'metacritic_url']
+      console.log(data)
+      keys = ['id', 'name', 'description', 'rating', 'reddit_url', 'released', 'metacritic_url', 'background_image']
       for(let i = 0; i < keys.length; i++){
         ans[keys[i]] = data[keys[i]]
       }
