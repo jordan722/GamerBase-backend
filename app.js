@@ -35,12 +35,9 @@ const syncDatabase = async () => {
 			await seedDatabase();
 		} catch (err) {
 			if (err.name === "SequelizeConnectionError") {
-				console.log(
-					"Database not found, please create capstone-back database."
-				);
-				process.exit(-1);
-				// await createLocalDatabase();
-				// await seedDatabase();
+				await createLocalDatabase();
+				await db.sync({ force: true });
+				await seedDatabase();
 			} else {
 				console.log(err);
 			}
