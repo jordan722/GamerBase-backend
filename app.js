@@ -77,8 +77,7 @@ const configureApp = () => {
 
 	app.use(
 		session({
-			secret:
-				"a super secretive secret key string to encrypt and sign the cookie",
+			secret: process.env.SESSION_SECRET,
 			store: sessionStore,
 			resave: false,
 			saveUninitialized: false
