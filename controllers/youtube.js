@@ -62,7 +62,7 @@ async function getStreams(req, res, next) {
 			})
 		);
 
-		res.status(200).json(streams);
+		res.status(200).json({ streams: streams });
 	} catch (err) {
 		console.log(err);
 	}
