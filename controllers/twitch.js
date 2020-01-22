@@ -9,23 +9,46 @@ const twitchController = {
 // GET api/twitch/streams?gameName
 async function getStreams(req, res, next) {
 	try {
+		// Search api for id, name and box art
+		// using v5 api because new api requires exact match
 		let info = await axios({
 			method: "get",
-			url: "https://api.twitch.tv/helix/games",
-			params: { name: req.query.gameName },
-			headers: { "Client-ID": TWITCH_API_KEY }
+			url: "https://api.twitch.tv/kraken/search/games",
+			params: { query: req.query.gameName, live: true },
+			headers: {
+				"Client-ID": TWITCH_API_KEY,
+				Accept: "application/vnd.twitchtv.v5+json"
+			}
 		});
-		info = info.data.data[0];
+		if (info.data.games === null) {
+			res.status(404).json("Game not found - Twitch");
+		}
+		info = info.data.games[0];
 
+		let response = {
+			id: info._id,
+			name: info.name,
+			box_art_url: info.box.template
+		};
+
+		// Get streams for game
 		let streams = await axios({
 			method: "get",
 			url: "https://api.twitch.tv/helix/streams",
-			params: { game_id: info.id },
-			headers: { "Client-ID": TWITCH_API_KEY }
+			params: { game_id: info._id },
+			headers: {
+				"Client-ID": TWITCH_API_KEY
+			}
 		});
+		if (streams.data.data.length === 0) {
+			response.streams = null;
+			res.status(404).json(response);
+		}
+
 		streams = await Promise.all(
 			streams.data.data.slice(0, 10).map(async stream => {
 				try {
+					// get profile picture for each streamer
 					let user = await axios({
 						method: "get",
 						url: "https://api.twitch.tv/helix/users",
@@ -48,9 +71,9 @@ async function getStreams(req, res, next) {
 			})
 		);
 
-		const response = { ...info, ...{ streams: streams } };
+		response.streams = streams;
 
-		res.status(200).send(response);
+		res.status(200).json(response);
 	} catch (err) {
 		console.log(err);
 	}

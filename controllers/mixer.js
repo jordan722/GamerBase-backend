@@ -12,6 +12,9 @@ async function getStreams(req, res, next) {
 			url: "https://mixer.com/api/v1/types",
 			params: { query: req.query.gameName }
 		});
+		if (info.data.length === 0) {
+			res.status(400).json("Game not found - Mixer");
+		}
 		info = info.data.filter(game => game.viewersCurrent > 0)[0];
 		info = {
 			id: info.id,
