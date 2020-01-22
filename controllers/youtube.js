@@ -3,29 +3,66 @@ const axios = require("axios");
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 
 const youtubeController = {
-	getYoutubeStreams: getYoutubeStreams
+	getStreams: getStreams
 };
 
-// GET api/youtube/:game_name/streams
-async function getYoutubeStreams(req, res, next) {
+// GET api/youtube/streams?gameName
+async function getStreams(req, res, next) {
 	try {
-		const response = await axios({
+		let streams = await axios({
 			method: "get",
 			url: "https://www.googleapis.com/youtube/v3/search",
 			params: {
 				key: YOUTUBE_API_KEY,
-				q: req.params.game_name,
+				q: req.query.gameName,
 				part: "snippet",
-				maxResults: 25,
+				maxResults: 10,
 				eventType: "live",
-				type: "video"
+				type: "video",
+				order: "viewCount"
 			}
 		});
-		if (response.status === 200) {
-			res.status(200).json(response.data);
-		} else {
-			throw "Bad Youtube query.";
-		}
+
+		streams = await Promise.all(
+			streams.data.items.map(async stream => {
+				try {
+					let user = await axios({
+						method: "get",
+						url: "https://www.googleapis.com/youtube/v3/videos",
+						params: {
+							key: YOUTUBE_API_KEY,
+							part: "liveStreamingDetails",
+							id: stream.id.videoId
+						}
+					});
+					user = user.data.items[0];
+
+					let channel = await axios({
+						method: "get",
+						url: "https://www.googleapis.com/youtube/v3/channels",
+						params: {
+							key: YOUTUBE_API_KEY,
+							part: "snippet",
+							id: stream.snippet.channelId
+						}
+					});
+					channel = channel.data.items[0];
+
+					return {
+						user_name: stream.snippet.channelTitle,
+						profile_image_url: channel.snippet.thumbnails.medium.url,
+						title: stream.snippet.title,
+						thumbnail_url: stream.snippet.thumbnails.high.url,
+						viewer_count: user.liveStreamingDetails.concurrentViewers,
+						external_link: `https://www.youtube.com/watch?v=${stream.id.videoId}`
+					};
+				} catch (err) {
+					console.log(err);
+				}
+			})
+		);
+
+		res.status(200).json(streams);
 	} catch (err) {
 		console.log(err);
 	}
