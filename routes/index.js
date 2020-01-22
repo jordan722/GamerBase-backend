@@ -7,6 +7,7 @@ const twitchRouter = require("./twitch");
 const rawgRouter = require("./rawg");
 const mixerRouter = require("./mixer");
 const youtubeRouter = require("./youtube");
+const authRouter = require("./auth");
 
 // Mount our subrouters to assemble our apiRouter;
 router.use("/users", usersRouter);
@@ -14,6 +15,7 @@ router.use("/twitch", twitchRouter);
 router.use("/rawg", rawgRouter);
 router.use("/mixer", mixerRouter);
 router.use("/youtube", youtubeRouter);
+router.use("/auth", authRouter);
 
 // Error handling middleware;
 router.use((req, res, next) => {
