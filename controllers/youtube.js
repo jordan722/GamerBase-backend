@@ -22,6 +22,9 @@ async function getStreams(req, res, next) {
 				order: "viewCount"
 			}
 		});
+		if (streams.data.items.length === 0) {
+			res.status(404).json("Game not found - Youtube");
+		}
 
 		streams = await Promise.all(
 			streams.data.items.map(async stream => {
