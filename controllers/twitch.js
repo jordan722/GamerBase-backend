@@ -3,43 +3,39 @@ const axios = require("axios");
 const TWITCH_API_KEY = process.env.TWITCH_API_KEY;
 
 const twitchController = {
-	getTwitchInfo: getTwitchInfo,
-	getTwitchStreams: getTwitchStreams
+	getStreams: getStreams
 };
 
-// GET api/twitch/game/:name
-async function getTwitchInfo(req, res, next) {
+// GET api/twitch/streams?gameName
+async function getStreams(req, res, next) {
 	try {
-		const response = await axios({
+		let info = await axios({
 			method: "get",
 			url: "https://api.twitch.tv/helix/games",
-			params: { name: req.params.name },
+			params: { name: req.query.gameName },
 			headers: { "Client-ID": TWITCH_API_KEY }
 		});
-		if (response.status === 200) {
-			res.status(200).json(response.data.data[0]);
-		} else {
-			throw "Bad Twitch query.";
-		}
-	} catch (err) {
-		console.log(err);
-	}
-}
+		info = info.data.data[0];
 
-// GET api/twitch/:game_id/streams
-async function getTwitchStreams(req, res, next) {
-	try {
-		const response = await axios({
+		let streams = await axios({
 			method: "get",
 			url: "https://api.twitch.tv/helix/streams",
-			params: { game_id: req.params.game_id },
+			params: { game_id: info.id },
 			headers: { "Client-ID": TWITCH_API_KEY }
 		});
-		if (response.status === 200) {
-			res.status(200).json(response.data);
-		} else {
-			throw "Bad Twitch query.";
-		}
+		streams = streams.data.data.slice(0, 10).map(stream => {
+			return {
+				user_name: stream.user_name,
+				title: stream.title,
+				thumbnail_url: stream.thumbnail_url,
+				viewer_count: stream.viewer_count,
+				external_link: `https://www.twitch.tv/${stream.user_name}`
+			};
+		});
+
+		const response = { ...info, ...{ streams: streams } };
+
+		res.status(200).send(response);
 	} catch (err) {
 		console.log(err);
 	}
