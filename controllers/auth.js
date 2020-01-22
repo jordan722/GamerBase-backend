@@ -9,8 +9,7 @@ const authController = {
 async function signup(req, res, next) {
 	try {
 		const user = await User.create(req.body);
-		res.status(201).json("Created User!");
-		// req.login(user, err => (err ? next(err) : res.json(user)));
+		req.login(user, err => (err ? next(err) : res.json(user)));
 	} catch (err) {
 		if (err.name === "SequelizeUniqueConstraintError") {
 			res.status(401).send("User already exists");
@@ -20,8 +19,30 @@ async function signup(req, res, next) {
 	}
 }
 
-async function login(req, res, next) {}
+async function login(req, res, next) {
+	try {
+		const user = await User.findOne({ where: { email: req.body.email } });
+		if (!user) {
+			res.status(401).send("Wrong username and/or password");
+		} else if (!user.correctPassword(req.body.password)) {
+			res.status(401).send("Wrong username and/or password");
+		} else {
+			req.login(user, err => (err ? next(err) : res.json(user)));
+		}
+	} catch (err) {
+		next(err);
+	}
+}
 
-async function logout(req, res, next) {}
+async function logout(req, res, next) {
+	req.logout();
+	req.session.destroy(err => {
+		if (err) {
+			return next(err);
+		} else {
+			res.status(204).end();
+		}
+	});
+}
 
 module.exports = authController;
