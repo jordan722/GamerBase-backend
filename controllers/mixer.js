@@ -27,6 +27,7 @@ async function getStreams(req, res, next) {
 		streams = streams.data.slice(0, 10).map(stream => {
 			return {
 				user_name: stream.token,
+				profile_image_url: `https://mixer.com/api/v1/users/${stream.userId}/avatar`,
 				title: stream.name,
 				thumbnail_url: `https://thumbs.mixer.com/channel/${stream.id}.small.jpg`,
 				viewer_count: stream.viewersCurrent,
@@ -37,24 +38,6 @@ async function getStreams(req, res, next) {
 		const response = { ...info, ...{ streams: streams } };
 
 		res.status(200).send(response);
-	} catch (err) {
-		console.log(err);
-	}
-}
-
-// GET api/mixer/:game_id/streams
-async function getMixerStreams(req, res, next) {
-	try {
-		const response = await axios({
-			method: "get",
-			url: `https://mixer.com/api/v1/types/${req.params.game_id}/channels`,
-			params: { order: "viewersCurrent:DESC" }
-		});
-		if (response.status === 200) {
-			res.status(200).json(response.data);
-		} else {
-			throw "Bad Mixer query.";
-		}
 	} catch (err) {
 		console.log(err);
 	}
