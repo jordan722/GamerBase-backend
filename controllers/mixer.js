@@ -22,11 +22,20 @@ async function getStreams(req, res, next) {
 			box_art_url: info.coverUrl
 		};
 
+		let response = {
+			...info
+		};
+
 		let streams = await axios({
 			method: "get",
 			url: `https://mixer.com/api/v1/types/${info.id}/channels`,
 			params: { order: "viewersCurrent:DESC" }
 		});
+		if (streams.data.length === 0) {
+			response.streams = null;
+			res.status(404).json(response);
+		}
+
 		streams = streams.data.slice(0, 10).map(stream => {
 			return {
 				user_name: stream.token,
@@ -37,8 +46,7 @@ async function getStreams(req, res, next) {
 				external_link: `https://www.mixer.com/${stream.token}`
 			};
 		});
-
-		const response = { ...info, ...{ streams: streams } };
+		response.streams = streams;
 
 		res.status(200).send(response);
 	} catch (err) {
