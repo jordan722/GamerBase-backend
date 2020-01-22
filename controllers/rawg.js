@@ -90,7 +90,9 @@ async function getGameData(req, res, next){
         })
       }
 
-      ans.clip = data.clip.clip
+      if(data.clip){
+        ans.clip = data.clip.clip
+      }
 
       res.status(200).json(ans);
   }
