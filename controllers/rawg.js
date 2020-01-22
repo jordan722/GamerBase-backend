@@ -5,6 +5,8 @@ const rawgController = {
   getUpcoming: getUpcoming,
   getTopRated: getTopRated,
   getGameData: getGameData,
+  getGameReddit: getGameReddit,
+  getGameYoutube: getGameYoutube,
 }
 
 async function getTrending(req, res, next){
@@ -88,36 +90,57 @@ async function getGameData(req, res, next){
         })
       }
 
-      // get reddit posts
-      let redditData = await axios.get(`https://api.rawg.io/api/games/${req.params.id}/reddit`);
-      redditData = redditData.data.results;
-      ans.reddit_posts = [];
-      for(let i=0; i < redditData.length; i++){
-        ans.reddit_posts.push({
-          name: redditData[i].id,
-          url: redditData[i].url,
-          image: redditData[i].image,
-        })
-      }
-
-      // get youtube vids
-      let youtubeData = await axios.get(`https://api.rawg.io/api/games/${req.params.id}/youtube`);
-      youtubeData = youtubeData.data.results;
-      ans.youtube = [];
-      for(let i=0; i < youtubeData.length; i++){
-        ans.youtube.push({
-          name: youtubeData[i].name,
-          image: youtubeData[i].thumbnails.high.url,
-          url: `https://www.youtube.com/watch?v=${youtubeData[i].external_id}`,
-        })
-      }
+      ans.clip = data.clip.clip
 
       res.status(200).json(ans);
   }
   catch(err) {
       console.log(err);
-  res.status(400).json("something went wrong");
+      res.status(400).json("something went wrong");
   }
 }
+
+async function getGameReddit(req, res, next){
+  try{
+    // get reddit posts
+    let redditData = await axios.get(`https://api.rawg.io/api/games/${req.params.id}/reddit`);
+    redditData = redditData.data.results;
+    let reddit_posts = []
+    for(let i=0; i < redditData.length; i++){
+      ans.reddit_posts.push({
+        name: redditData[i].id,
+        url: redditData[i].url,
+        image: redditData[i].image,
+      })
+    }
+    res.send(200).json({reddit_posts: reddit_posts});
+  } catch (err){
+    console.log(err);
+    res.status(400).json("something went wrong");
+  }
+}
+
+async function getGameYoutube(req, res, next){
+  try{
+    // get youtube vids
+    let youtubeData = await axios.get(`https://api.rawg.io/api/games/${req.params.id}/youtube`);
+    youtubeData = youtubeData.data.results;
+    console.log("youtube data", youtubeData);
+    let youtube = [];
+    for(let i=0; i < youtubeData.length; i++){
+    youtube.push({
+        name: youtubeData[i].name,
+        image: youtubeData[i].thumbnails.high.url,
+        url: `https://www.youtube.com/watch?v=${youtubeData[i].external_id}`,
+      })
+    }
+    console.log("youtube", youtube)
+    res.send(200).json({youtube: youtube});
+  } catch (err) {
+    console.log(err);
+    res.status(400).json("something went wrong");
+  }
+}
+
 
 module.exports = rawgController;
