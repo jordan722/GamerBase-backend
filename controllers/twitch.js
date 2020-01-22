@@ -3,43 +3,77 @@ const axios = require("axios");
 const TWITCH_API_KEY = process.env.TWITCH_API_KEY;
 
 const twitchController = {
-	getTwitchInfo: getTwitchInfo,
-	getTwitchStreams: getTwitchStreams
+	getStreams: getStreams
 };
 
-// GET api/twitch/game/:name
-async function getTwitchInfo(req, res, next) {
+// GET api/twitch/streams?gameName
+async function getStreams(req, res, next) {
 	try {
-		const response = await axios({
+		// Search api for id, name and box art
+		// using v5 api because new api requires exact match
+		let info = await axios({
 			method: "get",
-			url: "https://api.twitch.tv/helix/games",
-			params: { name: req.params.name },
-			headers: { "Client-ID": TWITCH_API_KEY }
+			url: "https://api.twitch.tv/kraken/search/games",
+			params: { query: req.query.gameName, live: true },
+			headers: {
+				"Client-ID": TWITCH_API_KEY,
+				Accept: "application/vnd.twitchtv.v5+json"
+			}
 		});
-		if (response.status === 200) {
-			res.status(200).json(response.data.data[0]);
-		} else {
-			throw "Bad Twitch query.";
+		if (info.data.games === null) {
+			res.status(404).json("Game not found - Twitch");
 		}
-	} catch (err) {
-		console.log(err);
-	}
-}
+		info = info.data.games[0];
 
-// GET api/twitch/:game_id/streams
-async function getTwitchStreams(req, res, next) {
-	try {
-		const response = await axios({
+		let response = {
+			id: info._id,
+			name: info.name,
+			box_art_url: info.box.template
+		};
+
+		// Get streams for game
+		let streams = await axios({
 			method: "get",
 			url: "https://api.twitch.tv/helix/streams",
-			params: { game_id: req.params.game_id },
-			headers: { "Client-ID": TWITCH_API_KEY }
+			params: { game_id: info._id },
+			headers: {
+				"Client-ID": TWITCH_API_KEY
+			}
 		});
-		if (response.status === 200) {
-			res.status(200).json(response.data);
-		} else {
-			throw "Bad Twitch query.";
+		if (streams.data.data.length === 0) {
+			response.streams = null;
+			res.status(404).json(response);
 		}
+
+		streams = await Promise.all(
+			streams.data.data.slice(0, 10).map(async stream => {
+				try {
+					// get profile picture for each streamer
+					let user = await axios({
+						method: "get",
+						url: "https://api.twitch.tv/helix/users",
+						params: { id: stream.user_id },
+						headers: { "Client-ID": TWITCH_API_KEY }
+					});
+					user = user.data.data[0];
+
+					return {
+						user_name: stream.user_name,
+						profile_image_url: user.profile_image_url,
+						title: stream.title,
+						thumbnail_url: stream.thumbnail_url,
+						viewer_count: stream.viewer_count,
+						external_link: `https://www.twitch.tv/${stream.user_name}`
+					};
+				} catch (err) {
+					console.log(err);
+				}
+			})
+		);
+
+		response.streams = streams;
+
+		res.status(200).json(response);
 	} catch (err) {
 		console.log(err);
 	}
