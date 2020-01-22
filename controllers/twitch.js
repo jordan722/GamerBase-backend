@@ -22,6 +22,7 @@ async function getStreams(req, res, next) {
 		});
 		if (info.data.games === null) {
 			res.status(404).json("Game not found - Twitch");
+			return;
 		}
 		info = info.data.games[0];
 
@@ -43,6 +44,7 @@ async function getStreams(req, res, next) {
 		if (streams.data.data.length === 0) {
 			response.streams = null;
 			res.status(404).json(response);
+			return;
 		}
 
 		streams = await Promise.all(
