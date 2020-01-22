@@ -23,15 +23,30 @@ async function getStreams(req, res, next) {
 			params: { game_id: info.id },
 			headers: { "Client-ID": TWITCH_API_KEY }
 		});
-		streams = streams.data.data.slice(0, 10).map(stream => {
-			return {
-				user_name: stream.user_name,
-				title: stream.title,
-				thumbnail_url: stream.thumbnail_url,
-				viewer_count: stream.viewer_count,
-				external_link: `https://www.twitch.tv/${stream.user_name}`
-			};
-		});
+		streams = await Promise.all(
+			streams.data.data.slice(0, 10).map(async stream => {
+				try {
+					let user = await axios({
+						method: "get",
+						url: "https://api.twitch.tv/helix/users",
+						params: { id: stream.user_id },
+						headers: { "Client-ID": TWITCH_API_KEY }
+					});
+					user = user.data.data[0];
+
+					return {
+						user_name: stream.user_name,
+						profile_image_url: user.profile_image_url,
+						title: stream.title,
+						thumbnail_url: stream.thumbnail_url,
+						viewer_count: stream.viewer_count,
+						external_link: `https://www.twitch.tv/${stream.user_name}`
+					};
+				} catch (err) {
+					console.log(err);
+				}
+			})
+		);
 
 		const response = { ...info, ...{ streams: streams } };
 
