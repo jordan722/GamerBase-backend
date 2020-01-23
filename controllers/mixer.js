@@ -41,10 +41,8 @@ async function getStreams(req, res, next) {
 		streams = streams.data.slice(0, 10).map(stream => {
 			return {
 				user_name: stream.token,
-				profile_image_url: `https://mixer.com/api/v1/users/${stream.userId}/avatar`,
 				title: stream.name,
 				thumbnail_url: `https://thumbs.mixer.com/channel/${stream.id}.small.jpg`,
-				viewer_count: stream.viewersCurrent,
 				external_link: `https://www.mixer.com/${stream.token}`
 			};
 		});
