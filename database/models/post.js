@@ -12,7 +12,7 @@ const Post = db.define("post", {
 	},
 	replies: {
 		type: Sequelize.ARRAY(Sequelize.JSON),
-    allowNull: true
+		allowNull: true
 	}
 });
 
