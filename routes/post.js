@@ -9,7 +9,7 @@ router.route("/").get(postController.getAllPosts);
 router.route("/").post(postController.addPost);
 
 // GET api/post/:id
-router.route("/:id").post(postController.getPost);
+router.route("/:id").get(postController.getPost);
 
 // PUT api/post/:id
 router.route("/:id").put(postController.updatePost)

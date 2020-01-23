@@ -22,6 +22,7 @@ async function getAllPosts(req, res, next) {
 async function addPost(req, res, next) {
   try {
     const newPost = await Post.create(req.body);
+		console.log("looking for post");
     res.status(201).json(newPost);
   } catch (err) {
     console.log(err);
