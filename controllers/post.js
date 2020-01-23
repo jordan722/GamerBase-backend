@@ -45,6 +45,8 @@ async function getPost(req, res, next){
 
 async function updatePost(req,res,next){
   try {
+		console.log('tried to update post')
+		console.log(req.body)
 		let updatedPostInfo = await Post.update(req.body, {
 			where: { id: req.params.id },
 			returning: true,

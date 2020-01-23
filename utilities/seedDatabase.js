@@ -16,7 +16,7 @@ const seedDatabase = async () => {
 			Post.create({
 				title: "first post",
 				lastUpdated: "yesterday",
-				replies: [{'title':'first comment', 'userId':1},{'title':'second comment', 'userId':0}],
+				replies: [{'title':'first comment', 'threadId':1, 'userId':1},{'title':'second comment', 'threadId':1, 'userId':0}],
 				userId: 1,
 			})
 		]);
