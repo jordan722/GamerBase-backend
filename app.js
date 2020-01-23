@@ -7,11 +7,16 @@ if (process.env.NODE_ENV !== "production") {
 
 // Module dependencies;
 const express = require("express");
+const session = require("express-session");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
+const passport = require("passport");
+const cors = require("cors");
+
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 // Utilities;
 const createLocalDatabase = require("./utilities/createLocalDatabase");
@@ -19,6 +24,17 @@ const seedDatabase = require("./utilities/seedDatabase");
 
 // Our database instance;
 const db = require("./database");
+const sessionStore = new SequelizeStore({ db });
+
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+	try {
+		const user = await db.models.user.findByPk(id);
+		done(null, user);
+	} catch (err) {
+		done(err);
+	}
+});
 
 // Our apiRouter;
 const apiRouter = require("./routes/index");
@@ -57,6 +73,20 @@ const configureApp = () => {
 	app.use(compression());
 	app.use(cookieParser());
 
+	app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+
+	app.use(
+		session({
+			secret: process.env.SESSION_SECRET,
+			store: sessionStore,
+			resave: false,
+			saveUninitialized: false
+		})
+	);
+
+	app.use(passport.initialize());
+	app.use(passport.session());
+
 	// Mount our apiRouter;
 	app.use("/api", apiRouter);
 
@@ -81,6 +111,7 @@ const configureApp = () => {
 
 // Main function declaration;
 const bootApp = async () => {
+	await sessionStore.sync();
 	await syncDatabase();
 	await configureApp();
 };
