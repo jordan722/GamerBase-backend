@@ -16,7 +16,7 @@ async function getStreams(req, res, next) {
 			res.status(400).json("Game not found - Mixer");
 			return;
 		}
-		info = info.data.filter(game => game.viewersCurrent > 0)[0];
+		info = info.data[0];
 		info = {
 			id: info.id,
 			name: info.name,

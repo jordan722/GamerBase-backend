@@ -1,4 +1,4 @@
-const { User } = require("../database/models");
+const { User, Post } = require("../database/models");
 
 const seedDatabase = async () => {
 	try {
@@ -12,6 +12,12 @@ const seedDatabase = async () => {
 				firstName: "Jordan",
 				lastName: "Yaqoob",
 				email: "jordan@gmail.com"
+			}),
+			Post.create({
+				title: "first post",
+				lastUpdated: "yesterday",
+				replies: [{'title':'first comment', 'userId':1},{'title':'second comment', 'userId':0}],
+				userId: 1,
 			})
 		]);
 	} catch (err) {
