@@ -12,14 +12,14 @@ const seedDatabase = async () => {
 				name: "Jordan Yaqoob",
 				email: "jordan@gmail.com",
 				password: "pass"
-			}),
-			Post.create({
-				title: "first post",
-				lastUpdated: "yesterday",
-				replies: [{'title':'first comment', 'threadId':1, 'userId':1},{'title':'second comment', 'threadId':1, 'userId':0}],
-				userId: 1,
 			})
 		]);
+		await Post.create({
+			title: "first post",
+			lastUpdated: "yesterday",
+			replies: [{'title':'first comment', 'threadId':1, 'userId':1},{'title':'second comment', 'threadId':1, 'userId':2}],
+			userId: 2
+		});
 	} catch (err) {
 		console.log(err);
 	}
