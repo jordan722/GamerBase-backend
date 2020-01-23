@@ -14,4 +14,10 @@ router.route("/upcoming").get(rawgController.getUpcoming);
 // GET api/rawg/:id
 router.route("/:id").get(rawgController.getGameData);
 
+// GET api/rawg/:id
+router.route("/:id/reddit").get(rawgController.getGameReddit);
+
+// GET api/rawg/:id
+router.route("/:id/youtube").get(rawgController.getGameYoutube);
+
 module.exports = router;
