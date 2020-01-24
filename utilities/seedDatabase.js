@@ -18,8 +18,13 @@ const seedDatabase = async () => {
 			title: "first post",
 			lastUpdated: "yesterday",
 			replies: [
-				{ title: "first comment", threadId: 1, userId: 1 },
-				{ title: "second comment", threadId: 1, userId: 2 }
+				{ title: "first comment", threadId: 1, userId: 1, userName: "Kun Yu" },
+				{
+					title: "second comment",
+					threadId: 1,
+					userId: 2,
+					userName: "Jordan Yaqoob"
+				}
 			],
 			userId: 2
 		});
