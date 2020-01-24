@@ -6,18 +6,21 @@ const seedDatabase = async () => {
 			User.create({
 				name: "Kun Yu",
 				email: "kun@gmail.com",
-				password: "pass"
+				password: "1234"
 			}),
 			User.create({
 				name: "Jordan Yaqoob",
 				email: "jordan@gmail.com",
-				password: "pass"
+				password: "1234"
 			})
 		]);
 		await Post.create({
 			title: "first post",
 			lastUpdated: "yesterday",
-			replies: [{'title':'first comment', 'threadId':1, 'userId':1},{'title':'second comment', 'threadId':1, 'userId':2}],
+			replies: [
+				{ title: "first comment", threadId: 1, userId: 1 },
+				{ title: "second comment", threadId: 1, userId: 2 }
+			],
 			userId: 2
 		});
 	} catch (err) {
