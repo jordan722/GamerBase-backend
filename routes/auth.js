@@ -11,5 +11,8 @@ router.route("/login").post(authController.login);
 // POST api/auth/logout
 router.route("/logout").delete(authController.logout);
 
+// GET api/auth/me
+router.route("/me").get(authController.me);
+
 // Export our router, so that it can be imported to construct our apiRouter;
 module.exports = router;

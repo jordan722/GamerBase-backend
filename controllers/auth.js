@@ -3,7 +3,8 @@ const { User } = require("../database/models");
 const authController = {
 	login: login,
 	logout: logout,
-	signup: signup
+	signup: signup,
+	me: me
 };
 
 async function signup(req, res, next) {
@@ -43,6 +44,14 @@ async function logout(req, res, next) {
 			res.status(204).end();
 		}
 	});
+}
+
+async function me(req, res, next) {
+	try {
+		res.json(req.user);
+	} catch (err) {
+		console.log(err);
+	}
 }
 
 module.exports = authController;
