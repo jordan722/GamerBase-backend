@@ -1,10 +1,9 @@
 {
-	"name": "gamer-base-back",
+	"name": "gamerBase-back",
 	"main": "app.js",
-	"version": "0.0.0",
-	"private": true,
+	"version": "1.0.0",
 	"scripts": {
-		"start": "nodemon ./bin/www"
+		"start": "node ./bin/www"
 	},
 	"dependencies": {
 		"axios": "^0.19.1",
@@ -24,5 +23,8 @@
 		"pgtools": "^0.3.0",
 		"sequelize": "^4.41.0",
 		"unminify": "^1.1.0"
+	},
+	"engines": {
+		"node": "12.x"
 	}
 }

@@ -109,6 +109,10 @@ const configureApp = () => {
 	});
 };
 
+app.get("/", (req, res, next) => {
+	res.json("GamerBase Backend");
+});
+
 // Main function declaration;
 const bootApp = async () => {
 	await sessionStore.sync();
