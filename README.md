@@ -35,7 +35,7 @@ documentation can be found here:
 Running the backend will create a database for users and posts. Make sure that postgreSQL or another database installed
 and set-up before using npm start. PostgreSQL can be found at https://www.postgresql.org/
 
-## Enpoints
+## Endpoints
 
 <table>
 	<tr>
